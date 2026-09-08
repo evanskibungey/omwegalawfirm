@@ -15,11 +15,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Never seed accounts outside local development. This database holds
+        // privileged client and matter data, and a seeded account has a known
+        // password — running this in production would create a back door.
+        // Production accounts are created with `php artisan app:create-user`.
+        if (! app()->environment('local')) {
+            $this->command->warn('Skipping user seeding: only runs in the local environment.');
+
+            return;
+        }
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Local Dev',
+            'email' => 'dev@omwenga.test',
         ]);
     }
 }
