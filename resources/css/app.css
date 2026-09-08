@@ -6,6 +6,118 @@
 @source '../**/*.js';
 @source '../**/*.jsx';
 
+/*
+| Brand tokens — Omwenga & Company Advocates
+|
+| Tailwind v4: theme values live here, not in a tailwind.config.js. Anything
+| declared below is available as a utility (--color-navy-800 -> bg-navy-800).
+|
+| The identity is navy and teal, per proposal section 8. Navy carries authority
+| and does the structural work; teal is the accent and is spent sparingly on
+| links, focus rings and calls to action.
+|
+| Neutrals are Tailwind's stock `slate`, which is already cool and blue-biased,
+| so it sits with navy without muddying. Do not mix in `gray` or `zinc`.
+*/
 @theme {
-    --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+    --color-navy-50: #f0f5f9;
+    --color-navy-100: #dce8f1;
+    --color-navy-200: #bcd2e3;
+    --color-navy-300: #92b4cf;
+    --color-navy-400: #6690b4;
+    --color-navy-500: #467199;
+    --color-navy-600: #35597e;
+    --color-navy-700: #2b4766;
+    --color-navy-800: #1d3348;
+    --color-navy-900: #142534;
+    --color-navy-950: #0b1723;
+
+    --color-teal-50: #ecf8f6;
+    --color-teal-100: #d2efeb;
+    --color-teal-200: #a8dfd8;
+    --color-teal-300: #74c8bf;
+    --color-teal-400: #46aba1;
+    --color-teal-500: #2a8f86;
+    --color-teal-600: #1f736c;
+    --color-teal-700: #1c5c57;
+    --color-teal-800: #194a46;
+    --color-teal-900: #163d3a;
+    --color-teal-950: #0a2523;
+
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+}
+
+/*
+| Base layer. Kept deliberately small — everything else belongs in a component.
+*/
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+    }
+
+    body {
+        @apply bg-white text-slate-700 antialiased;
+    }
+
+    h1,
+    h2,
+    h3 {
+        @apply font-display text-navy-900;
+        text-wrap: balance;
+    }
+
+    /* One focus treatment for the whole site, in the accent. */
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-teal-600;
+    }
+}
+
+/*
+| Long-form copy supplied by the firm — practice-area bodies, the About page.
+| The firm writes prose, not classes, so the wrapper styles whatever HTML
+| arrives. Deliberately narrow: headings, paragraphs, lists, links, emphasis.
+*/
+@layer components {
+    .prose-firm > * + * {
+        @apply mt-5;
+    }
+
+    .prose-firm p {
+        @apply text-base leading-relaxed text-slate-700;
+    }
+
+    .prose-firm h2 {
+        @apply mt-10 font-display text-2xl text-navy-900;
+    }
+
+    .prose-firm h3 {
+        @apply mt-8 font-display text-xl text-navy-900;
+    }
+
+    .prose-firm ul {
+        @apply list-disc pl-5 text-slate-700;
+    }
+
+    .prose-firm ol {
+        @apply list-decimal pl-5 text-slate-700;
+    }
+
+    .prose-firm li + li {
+        @apply mt-2;
+    }
+
+    .prose-firm a {
+        @apply font-medium text-teal-700 underline underline-offset-2 hover:text-teal-800;
+    }
+
+    .prose-firm strong {
+        @apply font-semibold text-navy-900;
+    }
 }

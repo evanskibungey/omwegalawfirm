@@ -53,9 +53,18 @@ Sent with every response by `HandleInertiaRequests::share()`.
     success: "Client saved.",     // or null
     error: "Something went wrong.", // or null
   },
+  office: {},                     // see Office below — from config/site.php
+  practice_areas: [],             // see PracticeArea below — from config/site.php
   ziggy: {},                      // route helper payload
 }
 ```
+
+> **Why `office` and `practice_areas` are shared, not page props.** The site header's
+> practice-area menu and the footer's office block need them on *every* page, and both read
+> `usePage()`, which contains only what the server sent. A client-side mock cannot reach a
+> layout. They are also static configuration whose permanent home is `config/site.php`, so
+> serving them from there during Phase 1 costs nothing later. Only database-backed entities
+> are mocked in `resources/js/data`.
 
 > **Phase 3 note.** `share()` currently returns `$request->user()` — the whole model. Once
 > roles exist, replace it with an explicit array of exactly the four keys above, so a column
@@ -212,7 +221,56 @@ the firm later wants to edit them itself, that is a post-launch add-on.
 }
 ```
 
+### Office
+
+A shared prop, from `config/site.php`. Consumed by the site footer on every page and by the
+contact page.
+
+```js
+{
+  name: "Omwenga & Company Advocates",
+  tagline: "Advocates, Commissioners for Oaths & Notaries Public",
+  address: {
+    building: "Daima Towers",
+    street: "Uganda Road",
+    town: "Eldoret",
+    county: "Uasin Gishu",
+    postal: "P.O. Box 0000-30100",
+    country: "Kenya",
+  },
+  phone: ["+254 7XX XXX XXX"],                            // array — the firm has two lines
+  email: "info@example.com",
+  hours: [
+    { days: "Monday – Friday", opens: "08:00", closes: "17:00" },
+    { days: "Sunday & public holidays", opens: null, closes: null },  // null = closed
+  ],
+  map_embed_url: null,
+}
+```
+
+### Advocate
+
+The **public** profile shown on the homepage team strip and the About page. Deliberately
+separate from the staff user record below: a public profile carries a biography and a
+photograph, and must never carry an email address, a role or an account status.
+
+```js
+{
+  id: 1,
+  slug: "advocate-one",
+  name: "Advocate Name",
+  title: "Managing Partner",
+  bio: "Short professional biography supplied by the firm.",
+  photo_url: "/storage/team/advocate-one.webp",           // nullable until supplied
+  practice_areas: ["conveyancing", "real-estate"],        // slugs
+  is_published: true,
+  sort_order: 1,
+}
+```
+
 ### Staff user
+
+The **internal** account record. Never sent to a public page.
 
 ```js
 {
@@ -287,11 +345,16 @@ What each Inertia page receives. Dummy providers must supply exactly this.
 
 | Page | Props |
 | --- | --- |
-| `Public/Home` | `practice_areas`, `advocates`, `gallery_preview` |
-| `Public/PracticeArea` | `area`, `related` |
-| `Public/About` | `advocates` |
-| `Public/Contact` | `office: { address, phone[], email, hours, map_embed_url }` |
-| `Public/Gallery` | `images`, `categories` |
+| `Public/Home` | `advocates`, `gallery_preview` |
+| `Public/PracticeAreas` | none of its own |
+| `Public/PracticeArea` | `area`, `related` (three areas, wrapping the list) |
+| `Public/About` | `advocates` (Advocate profiles, not StaffUser) |
+| `Public/Contact` | none of its own |
+| `Public/Gallery` | `images` |
+
+`office` and `practice_areas` are shared props and arrive on all of these automatically, so
+no public page declares them. `Public/PracticeArea` resolves `area` and `related` server-side
+from `config/site.php`.
 
 The consultation form posts to the enquiry endpoint and needs no props of its own beyond
 `practice_areas` for its dropdown.

@@ -34,6 +34,16 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+
+            // Needed by the site header and footer on every page.
+            // Shapes are defined in docs/data-shapes.md.
+            'office' => config('site.office'),
+            'practice_areas' => config('site.practice_areas'),
+
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 }
